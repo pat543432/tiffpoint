@@ -42,8 +42,8 @@
     /* Clues */
     .clue {
       padding: 8px;
-      margin-bottom: 8px;
-      border-radius: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
       text-align: center;
       display: flex;
       align-items: center;
@@ -52,15 +52,17 @@
 
     /* Guess display */
     .guess-display {
-      width: 100%;
-      min-height: 40px;
-      font-size: 20px;
-      text-align: center;
-      margin: 10px 0;
-      border: 2px solid rgba(214,180,252,0.8);
-      border-radius: 10px;
-      padding: 5px;
-      background: rgba(255,255,255,0.8);
+        width: 97%;
+        min-height: 40px;
+        font-size: 20px;
+        text-align: center;
+        display: flex;            /* make it a flex container */
+        align-items: center;      /* vertical centering */
+        justify-content: center;
+        border: 2px solid rgba(214,180,252,0.8);
+        border-radius: 10px;
+        padding: 5px;
+        background: rgba(255,255,255,0.8);
     }
 
     /* Custom keyboard */
@@ -69,6 +71,20 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 5px;
       margin-top: 10px;
+    }
+
+    .inputs-container {
+        position: fixed;      /* sticks to viewport */
+        bottom: 5vh;          /* distance from bottom of screen */
+        left: 50%;            /* horizontal center */
+        transform: translateX(-50%);
+        width: 95%;           /* adjust width as needed */
+        max-width: 500px;     /* optional */
+        background: rgba(255,255,255,0.85); /* slightly transparent */
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;        /* stays above clues and hearts */
     }
 
     .key-btn {
@@ -86,7 +102,7 @@
     }
 
     .guess-btn {
-      grid-column: span 2; /* make guess button wider */
+      grid-column: span 7; /* make guess button wider */
     }
 
     .backspace-btn {
@@ -104,9 +120,10 @@
 
 <div id="clues"></div>
 
-<div class="guess-display" id="guess-display"></div>
-
-<div id="keyboard" class="keyboard"></div>
+<div class="inputs-container">
+  <div class="guess-display" id="guess-display"></div>
+  <div id="keyboard" class="keyboard"></div>
+</div>
 
 <script>
   const answer = "VALENTINE";
