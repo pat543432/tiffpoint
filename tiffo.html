@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tiffpoint</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 90%;
+      max-width: 500px;
+      min-height: 100vh;
+      margin: 40px auto;
+      background-color:rgba(248, 237, 255, 0.8) ;
+    }
+    .name{
+        display: flex;
+        align-items: center;       /* vertical centering */
+        justify-content: center;
+    }
+    .clue {
+        padding: 8px;
+        display: flex;
+        align-items: center;       /* vertical centering */
+        justify-content: center; 
+    }
+    .btn {
+        padding: 12px 18px;
+        font-size: 16px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-right: 8px;
+    }
+    #hearts {
+        display: flex;         /* makes children line up in a row */
+        gap: 5px;              /* space between each heart */
+        justify-content: center; /* optional: center row horizontally */
+        align-items: center;
+    }
+    .btn:hover {
+        background-color:rgba(214, 180, 252, 0.8) ;
+        color: black;
+    }
+    .guess{
+        padding: 12px 18px;
+        font-size: 16px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-right: 8px;
+    }
+    .inputs {
+        position: fixed;       /* stick to the viewport, not document flow */
+        bottom: 10vh;          /* offset from bottom, responsive on mobile */
+        left: 50%;             /* center horizontally */
+        transform: translateX(-50%); /* perfect horizontal centering */
+        display: flex;         /* buttons and input in one row */
+        gap: 10px;             /* spacing between input and buttons */
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.8); /* optional: slight background for contrast */
+        border-radius: 12px;   /* optional rounded container */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* subtle shadow */
+        z-index: 1000;         /* ensures it stays above clues */
+    }
+    .header-row {
+    display: flex;               /* horizontal row */
+    align-items: center;         /* vertically center hearts with header */
+    justify-content: space-between;  /* optional: push header left, hearts right */
+    gap: 10px;                   /* space between header and hearts */
+}
+  </style>
+</head>
+<body>
+<div class="header-row">
+    <h2 class="name">Tiffpoint</h2>
+    <div id="hearts"></div>
+</div>
+<div id="clues"></div>
+<div class="inputs">
+    <input id="guess" placeholder="Your guess" class="guess" />
+    <button class="btn" onclick="checkGuess()">Guess</button>
+</div>
+
+<script>
+  const answer = "VALENTINE";
+  const clues = [
+    "Something celebrated once a year",
+    "It involves hearts",
+    "Often comes with chocolate",
+    "I want to spend it with you",
+    "Hello"
+  ];
+
+  const colours = ["rgba(210, 141, 255, 0.8)",
+                    "rgba(220, 166, 255, 0.8)",
+                    "rgba(230, 192, 255, 0.8)",
+                    "rgba(240, 217, 255, 0.8)",
+                    "rgba(250, 230, 255, 0.8)"
+                ]
+
+  let index = 0;
+
+  renderClues();
+
+  function renderClues() {
+    const container = document.getElementById("clues");
+    container.innerHTML = "";
+
+    for (let i = 0; i <= index; i++) {
+      const clueDiv = document.createElement("div");
+      clueDiv.className = "clue";
+      clueDiv.innerText = `${clues[i]}`;
+      clueDiv.style.backgroundColor = colours[i % colours.length]
+      container.appendChild(clueDiv);
+    }
+    renderHearts();
+  }
+
+  function renderHearts() {
+    const container = document.getElementById("hearts");
+    container.innerHTML = "";
+
+    for (let i = 4-index; i >= 0; i--) {
+        const heartDiv = document.createElement("div");
+        heartDiv.className = "heart";
+        const heartImg = document.createElement("img");   // create the image element
+        heartImg.src = "pic/heart.png";
+        heartImg.style.width = "30px"; 
+        heartDiv.appendChild(heartImg); 
+        container.appendChild(heartDiv);
+    }
+    if (index > 4) {
+        document.body.innerHTML = `
+        <h1>YOU GOT IT</h1>
+        <p>Now I have one more question…</p>
+        <h2>Will you be my Valentine?</h2>
+      `;
+    }
+  }
+
+  function nextClue() {
+    index++;
+    if (index < clues.length) {
+        
+        renderClues();
+    }
+  }
+
+  function checkGuess() {
+    const guess = document.getElementById("guess").value.trim().toUpperCase();
+    document.getElementById("guess").value = "";
+    if (guess === answer) {
+      document.body.innerHTML = `
+        <h1>YOU GOT IT</h1>
+        <p>Now I have one more question…</p>
+        <h2>Will you be my Valentine?</h2>
+      `;
+    } else if (guess != ""){
+        nextClue();
+        renderHearts();
+    }
+  }
+</script>
+
+</body>
+</html>
