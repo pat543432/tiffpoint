@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tiffpoint</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.2"> <!-- your preferred scale -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 90%;
+      max-width: 500px;
+      min-height: 100vh;
+      margin: 40px auto;
+      background-color:antiquewhite;
+      overflow: hidden;
+    }
+
+    /* Header + hearts row */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .name {
+      font-size: 1.5em;
+    }
+
+    .hearts {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .heart img {
+      display: block;
+      width: 30px;
+      height: 30px;
+    }
+
+    /* Clues */
+    .clue {
+      padding: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Guess display */
+    .guess-display {
+        width: 97%;
+        min-height: 40px;
+        font-size: 20px;
+        text-align: center;
+        display: flex;            /* make it a flex container */
+        align-items: center;      /* vertical centering */
+        justify-content: center;
+        border: 2px solid rgba(170, 93, 36, 0.8);
+        border-radius: 10px;
+        padding: 5px;
+        background: rgba(255,255,255,0.8);
+    }
+
+    /* Custom keyboard */
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .inputs-container {
+        position: fixed;      /* sticks to viewport */
+        bottom: 5vh;          /* distance from bottom of screen */
+        left: 50%;            /* horizontal center */
+        transform: translateX(-50%);
+        width: 95%;           /* adjust width as needed */
+        max-width: 500px;     /* optional */
+        padding: 10px;
+        z-index: 1000;        /* stays above clues and hearts */
+    }
+
+    .key-btn {
+      padding: 12px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.8);
+      background-color: rgba(149, 82, 31, 0.8);
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .key-btn:hover {
+      background-color: rgba(170, 93, 36, 0.8);
+    }
+
+    .guess-btn {
+      grid-column: span 7; /* make guess button wider */
+    }
+
+    .backspace-btn {
+      grid-column: span 2;
+    }
+
+    #popup-overlay {
+        position: fixed;
+        inset: 0;                     /* top:0 right:0 bottom:0 left:0 */
+        background: rgba(0,0,0,0.5);  /* dark overlay */
+        display: none;                /* hidden initially */
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+        #popup-underlay {
+        position: fixed;
+        inset: 0;                     /* top:0 right:0 bottom:0 left:0 */
+        background: rgba(0,0,0,0.5);  /* dark overlay */
+        display: none;                /* hidden initially */
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+
+    .popup {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        max-width: 300px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="header-row">
+  <h2 class="name"></h2>
+  <div id="hearts" class="hearts"></div>
+</div>
+
+<div id="clues"></div>
+<div id="popup-overlay">
+  <div class="popup">
+    <h2>YOU GOT IT!</h2>
+    <button onclick="closePopup()">YAY</button>
+  </div>
+</div>
+<div id="popup-underlay">
+  <div class="popup">
+    <h2>NOOO BUBBBBBB!</h2>
+    <button onclick="closePopdown()">next time!</button>
+  </div>
+</div>
+<div class="inputs-container">
+  <div class="guess-display" id="guess-display"></div>
+  <div id="keyboard" class="keyboard"></div>
+</div>
+
+<script>
+  const answer = "FLOWERS";
+  const clues = [
+    "Disbud",
+    "Cosmos",
+    "Marigold",
+    "Iris",
+    "Daisy",
+    "Type's of flowers!"
+  ];
+
+  const colours = [
+    "rgba(86, 47, 18, 0.8)",
+    "rgba(107, 58, 23, 0.8)",
+    "rgba(128, 70, 27, 0.8)",
+    "rgba(149, 82, 31, 0.8)",
+    "rgba(170, 93, 36, 0.8)",
+    "rgba(27, 35, 128,0.8)"
+  ];
+
+  let index = 0;
+  let currentGuess = "";
+
+  const guessDisplay = document.getElementById("guess-display");
+
+  renderClues();
+  renderHearts();
+  renderKeyboard();
+
+  function renderClues() {
+    const container = document.getElementById("clues");
+    container.innerHTML = "";
+
+    for (let i = 0; i <= index && i < clues.length; i++) {
+      const clueDiv = document.createElement("div");
+      clueDiv.className = "clue";
+      clueDiv.innerText = clues[i];
+      clueDiv.style.backgroundColor = colours[i % colours.length];
+      container.appendChild(clueDiv);
+    }
+  }
+
+  function renderHearts() {
+    const container = document.getElementById("hearts");
+    container.innerHTML = "";
+
+    for (let i = 4 - index; i >= 0; i--) {
+      const heartDiv = document.createElement("div");
+      heartDiv.className = "heart";
+      const heartImg = document.createElement("img");
+      heartImg.src = "pic/redheart.png"; // make sure this path is correct
+      heartDiv.appendChild(heartImg);
+      container.appendChild(heartDiv);
+    }
+
+    if (index == 5) {
+        showPopdown();
+    }
+  }
+
+    function renderKeyboard() {
+        const keyboard = document.getElementById("keyboard");
+        keyboard.innerHTML = "";
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+        letters.forEach(letter => {
+            const btn = document.createElement("button");
+            btn.textContent = letter;
+            btn.className = "key-btn";
+            btn.addEventListener("click", () => addLetter(letter));
+            keyboard.appendChild(btn);
+        });
+
+        const backspaceBtn = document.createElement("button");
+        backspaceBtn.textContent = "⌫";
+        backspaceBtn.className = "key-btn backspace-btn";
+        backspaceBtn.addEventListener("click", removeLetter);
+        keyboard.appendChild(backspaceBtn);
+
+        const guessBtn = document.createElement("button");
+        guessBtn.textContent = "Guess";
+        guessBtn.className = "key-btn guess-btn";
+        guessBtn.addEventListener("click", checkGuess);
+        keyboard.appendChild(guessBtn);
+    }
+
+    function addLetter(letter) {
+        if (currentGuess.length < answer.length) {
+        currentGuess += letter;
+        guessDisplay.textContent = currentGuess;
+        }
+    }
+
+    function removeLetter() {
+        currentGuess = currentGuess.slice(0, -1);
+        guessDisplay.textContent = currentGuess;
+    }
+
+    function checkGuess() {
+        const guess = currentGuess.trim().toUpperCase();
+        currentGuess = "";
+        guessDisplay.textContent = "";
+        if (guess === answer) {
+            index = clues.length-1;
+            renderClues();
+            showPopup();
+        } else if (guess !== "") {
+            index++;
+            renderClues();
+            renderHearts();
+        }
+    }
+
+    function showPopup() {
+        document.getElementById("popup-overlay").style.display = "flex";
+    }
+
+    function closePopup() {
+        document.getElementById("popup-overlay").style.display = "none";
+    }
+
+    function showPopdown() {
+        document.getElementById("popup-underlay").style.display = "flex";
+    }
+
+    function closePopdown() {
+        document.getElementById("popup-underlay").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
