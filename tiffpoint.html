@@ -166,14 +166,14 @@
 </div>
 
 <script>
-  const answer = "FLOWERS";
+  const answer = "POTATO";
   const clues = [
-    "Disbud",
-    "Cosmos",
-    "Marigold",
-    "Iris",
-    "Daisy",
-    "Type's of flowers!"
+    "Sweet",
+    "Purple",
+    "Russet",
+    "Mashed",
+    "Chip",
+    "Type's of potato!"
   ];
 
   const colours = [
@@ -267,7 +267,7 @@
         const guess = currentGuess.trim().toUpperCase();
         currentGuess = "";
         guessDisplay.textContent = "";
-        if (guess === answer) {
+        if (answer.startsWith(guess.slice(0, 6)) {
             index = clues.length-1;
             renderClues();
             showPopup();
@@ -297,4 +297,5 @@
 
 </body>
 </html>
+
 
