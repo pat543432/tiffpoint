@@ -267,7 +267,7 @@
         const guess = currentGuess.trim().toUpperCase();
         currentGuess = "";
         guessDisplay.textContent = "";
-        if (answer.startsWith(guess.slice(0, 6)) {
+        if (answer.startsWith(guess.slice(0, 6))) {
             index = clues.length-1;
             renderClues();
             showPopup();
@@ -297,5 +297,6 @@
 
 </body>
 </html>
+
 
 
