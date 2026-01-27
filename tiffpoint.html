@@ -166,14 +166,14 @@
 </div>
 
 <script>
-  const answer = "POTATO";
+  const answer = "APPLE";
   const clues = [
-    "Sweet",
-    "Purple",
-    "Russet",
-    "Mashed",
-    "Chip",
-    "Type's of potato!"
+    "Fuji",
+    "Mutsu",
+    "Gala",
+    "Granny",
+    "Pink Lady",
+    "Type's of apples!"
   ];
 
   const colours = [
@@ -265,7 +265,7 @@
         const guess = currentGuess.trim().toUpperCase();
         currentGuess = "";
         guessDisplay.textContent = "";
-        if (guess.length >= 6 && answer.startsWith(guess.slice(0, 6))) {
+        if (guess.length >= 5 && answer.startsWith(guess.slice(0, 5))) {
             index = clues.length-1;
             renderClues();
             showPopup();
@@ -295,6 +295,7 @@
 
 </body>
 </html>
+
 
 
 
